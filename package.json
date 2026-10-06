@@ -1,0 +1,44 @@
+{
+    "name": "@cellagents/game-protocol",
+    "version": "1.0.0",
+    "description": "Wire contract between a subscriber and the cells-game server. Zod schemas + inferred TypeScript types + runtime validators.",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "src",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "clean": "rm -rf dist",
+        "build": "npm run clean && tsc -p tsconfig.json",
+        "prepare": "npm run build",
+        "test": "npm run build && mocha test/**/*.js",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+    },
+    "dependencies": {
+        "zod": "^4.6.5"
+    },
+    "devDependencies": {
+        "@types/node": "^26.6.4",
+        "chai": "^4.5.0",
+        "mocha": "^12.0.3",
+        "typescript": "^5.9.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cellagents/game-protocol.git"
+    },
+    "license": "MIT",
+    "author": "Cell Agents <info@cellagents.dev>",
+    "engines": {
+        "node": ">=18"
+    }
+}
