@@ -1,6 +1,6 @@
 {
     "name": "@cellagents/game-protocol",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Wire contract between a subscriber and the cells-game server. Zod schemas + inferred TypeScript types + runtime validators.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -8,8 +8,13 @@
         ".": {
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
+        },
+        "./wire": {
+            "types": "./dist/wire.d.ts",
+            "default": "./dist/wire.js"
         }
     },
+    "sideEffects": false,
     "files": [
         "dist",
         "src",
