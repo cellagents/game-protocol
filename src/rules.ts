@@ -5,9 +5,12 @@
 // rule keys and unknown effect types MUST be ignored by clients
 // (see forward-compat rule 2 in README.md).
 //
-// The server emits no effects and never changes rules in the 1.0
-// implementation; the shape exists so a future minor can start
-// using them without a wire bump.
+// The 1.0 server emits two effects, `invulnerable` (player, during
+// the 3 s spawn-grace window) and `noMerge` (cell, after a split
+// until the merge timer expires). Rules are static in 1.0: the bag
+// shipped on `welcome.rules` matches the one in REGISTRY.md and the
+// server does not emit `rulesChanged`. The shape stays open so a
+// future minor can introduce mutators without a wire bump.
 
 import { z } from 'zod';
 
@@ -24,11 +27,13 @@ export type RulesPrimitive = z.infer<typeof RulesPrimitiveSchema>;
 /** The open rules bag advertised on `welcome.rules` and replaced
  *  in-flight by `rulesChanged`. Minimum keys expected in 1.0:
  *
- *    eatRatio             mass > other.mass * eatRatio to eat
+ *    eatRatio             cell eats an ejected mass pellet when
+ *                         cell.mass > ejected.mass * eatRatio;
+ *                         cell-vs-cell is full enclosure, not this ratio
  *    splitLimit           max cells per player
  *    defaultPlayerMass    spawn mass
  *    foodMass             mass granted when eating one food
- *    fireFoodMass         mass ejected per fireFood action
+ *    fireFoodMass         mass ejected per `eject` action
  *    maxHeartbeatInterval idle-kick threshold, ms
  *    chatMaxLength        character cap on `say.text`
  *    chatRateHz           server-side say rate cap per sender

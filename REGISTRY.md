@@ -26,7 +26,7 @@ optional velocity is `(vx, vy)` in world units / second.
 
 | Kind        | Fields beyond `EntityBase`           | Semantics                                                                 | Since |
 |-------------|--------------------------------------|---------------------------------------------------------------------------|-------|
-| `cell`      | `owner: string` (player id)          | A player's body. Multiple cells per player after splits.                  | 1.0   |
+| `cell`      | `owner: string` (player id)          | A player's body. Multiple cells per player after splits. Cell-versus-cell is settled by full enclosure (one cell's centre falls inside the other's radius), not a mass ratio; `rules.eatRatio` applies only to eating `ejected` mass. **Caveat (1.0):** cell ids are derived from `<owner>/<slot>` and change on every split, so they are not stable for the entity's life. A client that correlates cells across ticks should re-key on each tick. The post-1.0 `core` server will promote cell ids to first-class state. | 1.0   |
 | `food`      | `hue: number`                        | Static food pellet. Eating grants `mass`.                                 | 1.0   |
 | `ejected`   | `hue: number`                        | Mass fired by a player via the `eject` action.                            | 1.0   |
 | `virus`     | —                                    | Static hazard. Being touched by a bigger cell pops the cell into pieces.  | 1.0   |
@@ -63,7 +63,7 @@ MUST be ignored by clients.
 | Type           | Scope  | Params                                        | Semantics                                                                                                                                                      | Since |
 |----------------|--------|-----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
 | `noMerge`      | cell   | `until` = merge-timer expiry (ms)             | A cell cannot merge back with its sibling cells until `tick.time >= until`. Emitted after a split. Replaces visual-only inference of the server's `timeToMerge`. | 1.0   |
-| `invulnerable` | player | `until` optional; absent = until mass gained  | The player cannot be eaten. Emitted during the spawn grace window. Lets bots know they are safe before their first growth.                                     | 1.0   |
+| `invulnerable` | player | `until` = grace expiry (ms, spawn/respawn + 3 s) | The player cannot be eaten, but can still eat others. Emitted during the spawn-grace window and cleared automatically when `tick.time >= until`. The 1.0 server always ships a concrete `until`; schema leaves it optional so a future server can emit an open-ended variant. | 1.0   |
 
 ---
 
@@ -76,7 +76,7 @@ they do not recognise.
 
 | Key                     | Type    | Scope  | Semantics                                                                   | Since |
 |-------------------------|---------|--------|-----------------------------------------------------------------------------|-------|
-| `eatRatio`              | number  | world  | A cell with mass `m` eats one with mass `n` when `m > n * eatRatio`.        | 1.0   |
+| `eatRatio`              | number  | world  | Applies only to a cell eating an `ejected` mass pellet: the cell eats it when `cell.mass > ejected.mass * eatRatio`. Cell-versus-cell is settled by full enclosure, not by this ratio. Bots that judge fights against other cells should use geometric overlap, not `eatRatio`. | 1.0   |
 | `splitLimit`            | number  | world  | Hard cap on simultaneous cells per player.                                  | 1.0   |
 | `defaultPlayerMass`     | number  | world  | Starting mass granted on spawn.                                             | 1.0   |
 | `foodMass`              | number  | world  | Mass granted on eating one `food` entity.                                   | 1.0   |

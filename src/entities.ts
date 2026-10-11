@@ -42,7 +42,14 @@ export type EntityBase = z.infer<typeof EntityBaseSchema>;
 
 /** A player's cell on the field. `owner` is the player id (same as
  *  PlayerMeta.id). A player's cells are found by filtering
- *  entities with kind === 'cell' && owner === id. */
+ *  entities with kind === 'cell' && owner === id.
+ *
+ *  **Caveat (1.0):** the server derives cell `id` from
+ *  `<owner>/<slot>`, so a cell's id changes on every split. The
+ *  protocol-level promise of ids stable for the entity's life does
+ *  not yet hold for cells; a client that correlates cells across
+ *  ticks should re-key on each tick. The post-1.0 `core` server
+ *  will promote cell ids to first-class state. */
 export const CellSchema = EntityBaseSchema.extend({
     kind: z.literal('cell'),
     owner: z.string()
